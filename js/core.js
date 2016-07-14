@@ -19,11 +19,22 @@
     $('#myModal').modal('hide')
   };
 
+  var spinnerShow = function() {
+    $('#spinner').show();
+    $('#containerContent').hide();
+  };
+
+  var spinnerHide = function() {
+    $('#spinner').hide();
+    $('#containerContent').show();
+  };
+
   var message = function(title, text, type) {
 
     ajax('components/message', function(html) {
 
       $('#containerMessage').html(html);
+      $('#containerMessage').fadeIn('slow');
 
       $('#message').attr('class', 'alert ' + type);
       $('#messageTitle').html(title);
@@ -33,6 +44,10 @@
     });
 
   };
+
+  var messageError = function(error) {
+    message(error.code, error.message, 'alert-danger');
+  }
 
   var log = function(text) {
     $('#containerLog').html(text);

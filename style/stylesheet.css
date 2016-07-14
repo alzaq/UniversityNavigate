@@ -129,9 +129,14 @@ nav .btn{
     right: 10px;
     top: 10px;
     z-index: 100000;
+    display: none;
 }
 
 #containerLog {
     color: red;
     padding: 10px;
+}
+
+#spinner {
+    text-align: center;
 }

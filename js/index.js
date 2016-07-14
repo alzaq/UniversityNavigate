@@ -18,6 +18,8 @@ $(document).ready(function() {
 
       $('#userStatusEmail').html(user.email);
 
+      spinnerShow();
+
       ajax('components/contentGroupDetail', function(html) {
 
         firebase.database().ref('/users/' + user.uid).once('value').then(function(snapshot) {
@@ -26,6 +28,7 @@ $(document).ready(function() {
 
           firebase.database().ref('/groups/' + groups[0]).on('value', function(snapshot) {
 
+            spinnerHide();
             content(html);
 
             var group = snapshot.val();
@@ -80,6 +83,9 @@ $(document).ready(function() {
               firebase.auth().createUserWithEmailAndPassword(email, password)
                   .then(function(user) {
 
+                    modalHide();
+                    spinnerShow();
+
                     // create group
                     var groupUID = firebase.database().ref().child('groups').push().key;
 
@@ -100,13 +106,10 @@ $(document).ready(function() {
                     };
                     firebase.database().ref().update(updates);
 
-                    modalHide();
                     message("Welcome!", "Welcome " + user.email + "!", 'alert-success');
 
                   })
-                  .catch(function(error) {
-                    message(error.code, error.message, 'alert-danger');
-                  });
+                  .catch(messageError);
               return false;
             });
           });
@@ -123,6 +126,7 @@ $(document).ready(function() {
 
   // btn sign up
   $('#btnSignIn').click(function() {
+
     ajax('components/signInModalDialog', function (html) {
 
       modal(html);
@@ -137,9 +141,7 @@ $(document).ready(function() {
           modalHide();
           message("Welcome!", "Welcome " + user.email + "!", 'alert-success');
         })
-        .catch(function(error) {
-          message(error.code, error.message, 'alert-danger');
-        });
+        .catch(messageError);
 
       });
 
@@ -150,9 +152,7 @@ $(document).ready(function() {
   $('#btnSignOut').click(function() {
     firebase.auth().signOut().then(function() {
       message('Success', 'See you later man!', 'alert-success');
-    }, function(error) {
-      message(error.code, error.message, 'alert-danger');
-    });
+    }, messageError);
   });
 
 });
