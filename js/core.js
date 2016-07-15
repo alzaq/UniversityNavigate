@@ -1,54 +1,53 @@
-
-  var ajax = function(layout, done) {
+var ajax = function (layout, done) {
     $.ajax({
-      method: "GET",
-      url: '/' + layout + '.html?' + $.now()
+        method: "GET",
+        url: '/' + layout + '.html?' + $.now()
     }).done(done);
-  };
+};
 
-  var modal = function(html) {
+var modal = function (html) {
     $('#containerModal').html(html);
     $('#myModal').modal('show');
-  };
+};
 
-  var content = function(html) {
+var content = function (html) {
     $('#containerContent').html(html);
-  };
+};
 
-  var modalHide = function() {
+var modalHide = function () {
     $('#myModal').modal('hide')
-  };
+};
 
-  var spinnerShow = function() {
+var spinnerShow = function () {
     $('#spinner').show();
     $('#containerContent').hide();
-  };
+};
 
-  var spinnerHide = function() {
+var spinnerHide = function () {
     $('#spinner').hide();
     $('#containerContent').show();
-  };
+};
 
-  var message = function(title, text, type) {
+var message = function (title, text, type) {
 
-    ajax('components/message', function(html) {
+    ajax('components/message', function (html) {
 
-      $('#containerMessage').html(html);
-      $('#containerMessage').fadeIn('slow');
+        $('#containerMessage').html(html);
+        $('#containerMessage').fadeIn('slow');
 
-      $('#message').attr('class', 'alert ' + type);
-      $('#messageTitle').html(title);
-      $('#messageText').html(text);
+        $('#message').attr('class', 'alert ' + type);
+        $('#messageTitle').html(title);
+        $('#messageText').html(text);
 
-      $('#containerMessage').delay(5000).fadeOut('slow');
+        $('#containerMessage').delay(5000).fadeOut('slow');
     });
 
-  };
+};
 
-  var messageError = function(error) {
+var messageError = function (error) {
     message(error.code, error.message, 'alert-danger');
-  }
+};
 
-  var log = function(text) {
+var log = function (text) {
     $('#containerLog').html(text);
-  };
+};
