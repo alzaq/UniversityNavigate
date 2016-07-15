@@ -7,7 +7,7 @@
         <meta name="description" content="Summer School Exchange Students Project">
         <meta name="author" content="University of Hradec Kralove Students">
 
-        <title>CityU Navigate</title>
+        <title>University Navigate</title>
 
         <link rel="icon" href="/style/favicon.ico">
         <link rel="stylesheet" href="/build/bootstrap/css/bootstrap.min.css">
@@ -16,19 +16,12 @@
         <script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
         <script type="text/javascript" src="/build/bootstrap/js/bootstrap.min.js"></script>
 
-        <!-- <script type="text/javascript" src="/build/react/react.min.js"></script>
-        <script type="text/javascript" src="/build/react/react-dom.min.js"></script>
-        <script type="text/javascript" src="/build/react/react-dom-server.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script> -->
+        <script type="text/javascript" src="/build/jquery/jquery-md5.min.js"></script>
 
         <script src="https://www.gstatic.com/firebasejs/3.2.0/firebase.js"></script>
 
-        <!-- <script type="text/babel" src="/js/component/modalDialog.js"></script>
-        <script type="text/babel" src="/js/component/signInModalDialog.js"></script>
-        <script type="text/babel" src="/js/component/signUpModalDialog.js"></script>
-        <script type="text/babel" src="/js/component/UserStatusComponent.js"></script> -->
-
         <script type="text/javascript" src="/js/core.js"></script>
+        <script type="text/javascript" src="/js/component.js"></script>
         <script type="text/javascript" src="/js/index.js"></script>
 
     </head>

@@ -48,6 +48,17 @@ var messageError = function (error) {
     message(error.code, error.message, 'alert-danger');
 };
 
+var showUserLoggedComponent = function (user) {
+    $('#containerUnlogged').hide();
+    $('#containerLogged').show();
+    $('#userStatusEmail').html(user.email);
+};
+
+var showUserUnloggedComponent = function () {
+    $('#containerUnlogged').show();
+    $('#containerLogged').hide();
+};
+
 var log = function (text) {
     $('#containerLog').html(text);
 };
