@@ -35,4 +35,34 @@ $(document).ready(function () {
         }, messageError);
     });
 
+    $('#btnCreateGroup').click(function () {
+
+        componentCreateGroupModal();
+
+    });
+
+    //initDB();
 });
+
+
+var initDB = function() {
+
+    var categories = [
+        { color: 0, title: 'Food Shopping' },
+        { color: 30, title: 'MTR' },
+        { color: 60, title: 'Sightseeing' },
+        { color: 90, title: 'Nightlife' },
+        { color: 120, title: 'Hotel' },
+        { color: 150, title: 'Restaurant' },
+        { color: 180, title: 'Clothes' },
+        { color: 210, title: 'Souvenires' }
+    ];
+
+    for (var i in categories) {
+
+        firebase.database().ref('categories').push(
+            categories[i]
+        );
+    }
+
+}

@@ -46,7 +46,11 @@
                             <span id="userStatusEmail"></span> <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-right">
-                            <li><a href="#">Change password</a></li>
+                            <li><a href="#" id="btnCreateGroup">Create Group</a></li>
+                            <li role="separator" class="divider"></li>
+
+                            <li><a href="">UHK in HK 2016</a></li>
+
                             <li role="separator" class="divider"></li>
                             <li><a href="#" id="btnSignOut">Logout</a></li>
                         </ul>

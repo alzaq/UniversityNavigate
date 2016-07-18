@@ -51,7 +51,10 @@ var componentContentGroupDetail = function(user) {
                         $('.buttonUserDelete').click(function () {
 
                             if (confirm('Really delete ' + user.email + '?')) {
-                                alert("Deleted");
+
+                                firebase.database().ref('/invitations/' + md5(email) + '/groups/'  + groupUID).on('child_removed', function (snapshot) {
+                                    message("Invitation", "Invitation was canceled!", "alert-success");
+                                });
                             }
                             return false;
                         });
@@ -97,6 +100,10 @@ var componentContentGroupDetail = function(user) {
                                 updates['/invitations/' + emailMD5 + '/groups/' + groupUID] = created;
                                 firebase.database().ref().update(updates);
 
+                                // TODO send email
+
+
+
                                 modalHide();
                                 message("HEY", "Successfuly added", "alert-success");
 
@@ -131,45 +138,22 @@ var componentContentDefault = function () {
 
                     var email = $('#inputEmail').val();
                     var password = $('#inputPassword1').val();
-                    var groupName = $('#inputGroupName').val();
-
-                    // TODO
-                    var universityUID = '-KMbA50SGF3cnz-qOtJa';
 
                     // create user
                     firebase.auth().createUserWithEmailAndPassword(email, password)
                         .then(function (user) {
 
                             modalHide();
-                            spinnerShow();
+                            //spinnerShow();
 
                             // create group
-                            var groupUID = firebase.database().ref().child('groups').push().key;
-                            var userUID = user.uid;
-                            var emailMD5 = md5(user.email);
                             var created = new Date().getTime();
 
                             var updates = {};
-                            updates['/groups/' + groupUID] = {
-                                university: universityUID,
-                                administrator: userUID,
-                                created: created,
-                                name: groupName
-                            };
-                            updates['/invitations/' + emailMD5] = {
-                                email: email,
-                                created: created
-                            };
                             updates['/users/' + user.uid] = {
                                 email: user.email,
                                 created: created
                             };
-                            firebase.database().ref().update(updates);
-
-                            var updates = {};
-                            updates['/groups/' + groupUID + '/invitations/' + emailMD5] = created;
-                            updates['/invitations/' + emailMD5 + '/groups/' + groupUID] = created;
-                            updates['/users/' + user.uid + '/administrator/' + groupUID] = created; // TODO
                             firebase.database().ref().update(updates);
 
                             message("Welcome!", "Welcome " + user.email + "!", 'alert-success');
@@ -207,3 +191,47 @@ var componentSignInModal = function () {
         });
     });
 };
+
+var componentCreateGroupModal = function () {
+
+
+    ajax('components/addGroupModalDialog', function (html) {
+        modal(html);
+
+        firebase.auth().onAuthStateChanged(function(user) {
+
+            $('#buttonGroupCreate').click(function () {
+
+                var groupName = $('#inputGroupName').val();
+                var universityUID = $('#inputUniversity').val();
+
+                var created = new Date().getTime();
+
+                var groupUID = firebase.database().ref().child('groups').push().key;
+                var userUID = user.uid;
+                var emailMD5 = md5(user.email);
+
+                var updates = {};
+                updates['/users/' + user.uid + '/administrator/' + groupUID] = created;
+
+                updates['/groups/' + groupUID] = {
+                    university: universityUID,
+                    administrator: userUID,
+                    created: created,
+                    name: groupName
+                };
+                //updates['/groups/' + groupUID + '/invitations/' + emailMD5] = created;
+
+                updates['/invitations/' + emailMD5 + '/groups/' + groupUID] = created;
+                updates['/invitations/' + emailMD5 + '/email'] = user.email;
+                updates['/invitations/' + emailMD5 + '/created'] = created;
+                firebase.database().ref().update(updates);
+
+            });
+
+        });
+
+    });
+
+
+}
