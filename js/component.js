@@ -9,11 +9,10 @@ var componentContentGroupDetail = function(user) {
         firebase.database().ref('/users/' + user.uid).once('value').then(function (snapshot) {
 
             // load groups of current admin
-            var groups = snapshot.val().administrator;
+            var administrator = snapshot.val().administrator;
 
-            // TODO only first group for this time
-            if (groups.length > 0) {
-                var groupUID = groups[0];
+            for (var groupUID in administrator) {
+
                 firebase.database().ref('/groups/' + groupUID).on('value', function (snapshot) {
 
                     spinnerHide();
@@ -24,8 +23,18 @@ var componentContentGroupDetail = function(user) {
                     $('#groupDetailName').html(group.name);
 
                     var number = 1;
-                    var loadUserAsRowInTable = function(entity, id, email, created) {
+                    var loadUserAsRowInTable = function (entity, id, email, created, accepted) {
                         var row = $('<tr>');
+
+                        if (created != "---") {
+                            var createdDate = new Date(created);
+                            created = createdDate.toUTCString();
+                        }
+
+                        if (accepted != "---") {
+                            var acceptedDate = new Date(accepted);
+                            accepted = acceptedDate.toUTCString();
+                        }
 
                         row.append('<th>' + number + '</th>');
                         row.append('<td>' + email + '</td>');
@@ -50,26 +59,25 @@ var componentContentGroupDetail = function(user) {
                         number++;
                     };
 
-                    $.each(group.users, function (key, userUID) {
+                    for (var userUID in group.users) {
 
                         // foreach userUID load current user
                         firebase.database().ref('/users/' + userUID).once('value').then(function (snapshot) {
 
                             var user = snapshot.val();
-                            loadUserAsRowInTable('user', key, user.email, user.created);
+                            loadUserAsRowInTable('user', userUID, user.email, '---', group.users[userUID]);
                         });
-                    });
+                    };
 
-                    $.each(group.invitations, function (key, invitationUID) {
+                    for (var invitationUID in group.invitations) {
 
                         // foreach invitationUID load current invitation
                         firebase.database().ref('/invitations/' + invitationUID).once('value').then(function (snapshot) {
 
                             var invitation = snapshot.val();
-                            loadUserAsRowInTable('invitation', key, invitation.email, "");
+                            loadUserAsRowInTable('invitation', invitationUID, invitation.email, invitation.created, '---');
                         });
-                    });
-
+                    };
 
                     // add user click
                     $('#btnAddUser').click(function () {
@@ -82,23 +90,21 @@ var componentContentGroupDetail = function(user) {
                                 var emailMD5 = md5(email);
                                 var created = new Date().getTime();
 
-                                firebase.database().ref('invitations/' + emailMD5).set({
-                                    email: email,
-                                    created: created,
-                                    groups: {
-                                        0: groupUID
-                                    }
-                                });
+                                var updates = {};
+                                updates['/groups/' + groupUID + '/invitations/' + emailMD5] = created;
+                                updates['/invitations/' + emailMD5 + '/email'] = email;
+                                updates['/invitations/' + emailMD5 + '/created'] = created;
+                                updates['/invitations/' + emailMD5 + '/groups/' + groupUID] = created;
+                                firebase.database().ref().update(updates);
 
-                                firebase.database().ref('groups/' + groupUID + "/invitations").push({
-                                    email: emailMD5
-                                });
-
+                                modalHide();
+                                message("HEY", "Successfuly added", "alert-success");
 
                             });
                         });
                     });
                 });
+                return;
             }
         });
     });
@@ -151,7 +157,8 @@ var componentContentDefault = function () {
                                 name: groupName
                             };
                             updates['/invitations/' + emailMD5] = {
-                                email: email
+                                email: email,
+                                created: created
                             };
                             updates['/users/' + user.uid] = {
                                 email: user.email,
@@ -160,7 +167,7 @@ var componentContentDefault = function () {
                             firebase.database().ref().update(updates);
 
                             var updates = {};
-                            updates['/groups/' + groupUID + '/invitations/' + userUID] = created;
+                            updates['/groups/' + groupUID + '/invitations/' + emailMD5] = created;
                             updates['/invitations/' + emailMD5 + '/groups/' + groupUID] = created;
                             updates['/users/' + user.uid + '/administrator/' + groupUID] = created; // TODO
                             firebase.database().ref().update(updates);
