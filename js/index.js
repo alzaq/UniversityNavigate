@@ -14,7 +14,7 @@ $(document).ready(function () {
             // if I'm logged, show logged status, load data from Firebase and show Group of detail
             spinnerShow();
             showUserLoggedComponent(user);
-            componentContentGroupDetail(user);
+            componentContentGroupDefault(user);
         } else {
             // if not, show unlogged status, and show default page
             showUserUnloggedComponent();
@@ -23,23 +23,18 @@ $(document).ready(function () {
     });
 
     // btn sign up
-    $('#btnSignIn').click(function () {
-        componentSignInModal();
-        return false;
-    });
+    $('#btnSignIn').click(componentSignInModal);
 
+    // btn create new group
+    $('#btnCreateGroup').click(componentCreateGroupModal);
 
+    // btn sign out
     $('#btnSignOut').click(function () {
         firebase.auth().signOut().then(function () {
             message('Success', 'See you later man!', 'alert-success');
         }, messageError);
     });
 
-    $('#btnCreateGroup').click(function () {
-
-        componentCreateGroupModal();
-
-    });
 
     //initDB();
 });

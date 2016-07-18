@@ -7,7 +7,7 @@ var ajax = function (layout, done) {
 
 var modal = function (html) {
     $('#containerModal').html(html);
-    $('#myModal').modal('show');
+    $('#containerModal .modal').modal('show');
 };
 
 var content = function (html) {
@@ -15,7 +15,7 @@ var content = function (html) {
 };
 
 var modalHide = function () {
-    $('#myModal').modal('hide')
+    $('#containerModal .modal').modal('hide')
 };
 
 var spinnerShow = function () {
@@ -45,13 +45,16 @@ var message = function (title, text, type) {
 };
 
 var messageError = function (error) {
-    message(error.code, error.message, 'alert-danger');
+    message("Error " + error.code, error.message, 'alert-danger');
 };
 
 var showUserLoggedComponent = function (user) {
     $('#containerUnlogged').hide();
     $('#containerLogged').show();
     $('#userStatusEmail').html(user.email);
+
+
+
 };
 
 var showUserUnloggedComponent = function () {
