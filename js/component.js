@@ -14,21 +14,28 @@ var componentContentGroupDefault = function(user) {
 
                 firebase.database().ref('/groups/' + groupUID).on('value', function (snapshot) {
 
+                    var groupUID = snapshot.key;
                     var group = snapshot.val();
 
-                    var blockquote = $('<blockquote>');
-                    blockquote.append('<h3>' + group.name + '</h3>');
-                    blockquote.append('<p>' + group.university + '</p>');
-                    blockquote.append('<p>' +
-                        '<button type="button" class="btn btn-primary buttonGroupDetail" data-group="' + groupUID + '">' +
-                        'Group Detail' +
-                        '</button>' +
-                        '</p>');
+                    firebase.database().ref('/universities/' + group.university).on('value', function (snapshot) {
 
-                    $('#containerGroupsAdmin').append(blockquote);
+                        var university = snapshot.val();
 
-                    $('.buttonGroupDetail').click(function () {
-                        componentContentGroupDetail(groupUID);
+                        var blockquote = $('<blockquote>');
+                        blockquote.append('<h3>' + group.name + '</h3>');
+                        blockquote.append('<p>' + university.name + '</p>');
+                        blockquote.append('<p>' +
+                            '<button type="button" class="btn btn-primary buttonGroupDetail" data-group="' + groupUID + '">' +
+                            'Group Detail' +
+                            '</button>' +
+                            '</p>');
+
+                        $('#containerGroupsAdmin').append(blockquote);
+
+                        // go to GROUP detail
+                        $('.buttonGroupDetail').click(function () {
+                            componentContentGroupDetail($(this).data('group'));
+                        });
                     });
                 });
             }
@@ -38,21 +45,26 @@ var componentContentGroupDefault = function(user) {
 
                 firebase.database().ref('/groups/' + groupUID).on('value', function (snapshot) {
 
+                    var groupUID = snapshot.key;
                     var group = snapshot.val();
 
-                    var blockquote = $('<blockquote>');
-                    blockquote.append('<h3>' + group.name + '</h3>');
-                    blockquote.append('<p>' + group.university + '</p>');
+                    firebase.database().ref('/universities/' + group.university).on('value', function (snapshot) {
 
-                    $('#containerGroupsUser').append(blockquote);
+                        var university = snapshot.val();
+
+                        var blockquote = $('<blockquote>');
+                        blockquote.append('<h3>' + group.name + '</h3>');
+                        blockquote.append('<p>' + university.name + '</p>');
+
+                        $('#containerGroupsUser').append(blockquote);
+                    });
+
                 });
             }
 
         });
-
     });
-
-}
+};
 
 
 
@@ -73,35 +85,56 @@ var componentContentGroupDetail = function(groupUID) {
 
             $('#groupDetailName').html(group.name);
 
-            var number = 1;
-            var loadUserAsRowInTable = function (entity, id, email, created, accepted) {
-                var row = $('<tr>');
+            var users = { };
+            var numberOfUsers = Object.keys(group.invitations).length + Object.keys(group.users).length;
 
-                if (created != "---") {
-                    var createdDate = new Date(created);
-                    created = createdDate.toUTCString();
+            var printTable = function () {
+
+                if (Object.keys(users).length < numberOfUsers) {
+                    return;
                 }
 
-                if (accepted != "---") {
-                    var acceptedDate = new Date(accepted);
-                    accepted = acceptedDate.toUTCString();
+                $('#containerUsers').html('');
+
+                var number = 1;
+
+                for (var index in users) {
+
+                    var user = users[index];
+
+                    var row = $('<tr>');
+
+                    if (user.created != "---") {
+                        var createdDate = new Date(user.created);
+                        user.created = createdDate.toUTCString();
+                    }
+
+                    if (user.accepted != "---") {
+                        var acceptedDate = new Date(user.accepted);
+                        user.accepted = acceptedDate.toUTCString();
+                    }
+
+                    row.append('<th>' + number + '</th>');
+                    row.append('<td>' + user.email + '</td>');
+                    row.append('<td>' + user.created + '</td>');
+                    row.append('<td>' + user.accepted + '</td>');
+                    row.append('<td>' +
+                        '<button type="button" class="btn btn-default btn-xs buttonUserDelete" data-email="' + user.email + '" data-entity="' + user.entity + '" data-entityid="' + user.id + '" aria-label="Left Align">' +
+                        '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>' +
+                        '</button>' +
+                        '</td>');
+
+                    $('#containerUsers').append(row);
+
+                    number++;
                 }
 
-                row.append('<th>' + number + '</th>');
-                row.append('<td>' + email + '</td>');
-                row.append('<td>' + created + '</td>');
-                row.append('<td>' + accepted + '</td>');
-                row.append('<td>' +
-                    '<button type="button" class="btn btn-default btn-xs buttonUserDelete" data-email="' + email + '" data-entity="' + entity + '" data-entityid="' + id + '" aria-label="Left Align">' +
-                    '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>' +
-                    '</button>' +
-                    '</td>');
-
-                $('#containerUsers').append(row);
-
+                // delete USER click
                 $('.buttonUserDelete').click(function () {
 
-                    if (confirm('Really delete ' + $(this).data('email') + '?')) {
+                    var email = $(this).data('email');
+
+                    if (confirm('Really delete ' + email + '?')) {
 
                         firebase.database().ref('/invitations/' + md5(email) + '/groups/'  + groupUID).on('child_removed', function (snapshot) {
                             message("Invitation", "Invitation was canceled!", "alert-success");
@@ -109,8 +142,6 @@ var componentContentGroupDetail = function(groupUID) {
                     }
                     return false;
                 });
-
-                number++;
             };
 
             for (var userUID in group.users) {
@@ -119,7 +150,8 @@ var componentContentGroupDetail = function(groupUID) {
                 firebase.database().ref('/users/' + userUID).once('value').then(function (snapshot) {
 
                     var user = snapshot.val();
-                    loadUserAsRowInTable('user', userUID, user.email, '---', group.users[userUID]);
+                    users[snapshot.key] = { entity: 'user', id: user.uid, email: user.email, created: '---', accepted: group.users[userUID] };
+                    printTable();
                 });
             };
 
@@ -129,7 +161,8 @@ var componentContentGroupDetail = function(groupUID) {
                 firebase.database().ref('/invitations/' + invitationUID).once('value').then(function (snapshot) {
 
                     var invitation = snapshot.val();
-                    loadUserAsRowInTable('invitation', invitationUID, invitation.email, invitation.created, '---');
+                    users[snapshot.key] = { entity: 'invitation', id: invitationUID, email: invitation.email, created: invitation.created, accepted: '---' };
+                    printTable();
                 });
             };
 
