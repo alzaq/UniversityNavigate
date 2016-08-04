@@ -335,6 +335,10 @@ var componentCreateGroupModal = function () {
                 updates['/invitations/' + emailMD5 + '/email'] = user.email;
                 updates['/invitations/' + emailMD5 + '/created'] = created;
                 firebase.database().ref().update(updates);
+
+                message("Great!", "You created group called " + groupName + "!", 'alert-success');
+                modalHide();
+                componentContentGroupDefault(user);
             });
         });
     });

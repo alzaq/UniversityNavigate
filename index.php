@@ -47,9 +47,9 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-right">
                             <li><a href="#" id="btnCreateGroup">Create Group</a></li>
-                            <li role="separator" class="divider"></li>
+                            <!--<li role="separator" class="divider"></li>
 
-                            <li><a href="">UHK in HK 2016</a></li>
+                            <li><a href="">UHK in HK 2016</a></li>-->
 
                             <li role="separator" class="divider"></li>
                             <li><a href="#" id="btnSignOut">Logout</a></li>
@@ -57,7 +57,7 @@
                     </div>
                 </nav>
                 <img src="style/logo.png" alt="University Navigation">
-                <h3 class="text-muted">University Navigate</h3>
+                <h3 class="text-muted">CityU Navigate</h3>
             </div>
 
             <div id="spinner">
