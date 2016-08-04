@@ -86,8 +86,15 @@ var componentContentGroupDetail = function(groupUID) {
             $('#groupDetailName').html(group.name);
 
             var users = { };
-            var numberOfUsers = Object.keys(group.invitations).length + Object.keys(group.users).length;
 
+            var numberOfUsers = 0;
+
+            if (group.hasOwnProperty("invitations")) {
+              numberOfUsers += Object.keys(group.invitations).length;
+            }
+            if (group.hasOwnProperty("users")) {
+              numberOfUsers += Object.keys(group.users).length;
+            }
             var printTable = function () {
 
                 if (Object.keys(users).length < numberOfUsers) {
